@@ -8,8 +8,7 @@ class CreateGames < ActiveRecord::Migration[5.2]
       t.integer :player_hand
       t.integer :banker_hand
       t.integer :player_third_card
-
-
+      t.string :outcome
    end
   end
 end
