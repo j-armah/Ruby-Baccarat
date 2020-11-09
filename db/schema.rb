@@ -14,7 +14,11 @@ ActiveRecord::Schema.define(version: 2020_11_09_192138) do
 
   create_table "bankers", force: :cascade do |t|
     t.string "name"
+<<<<<<< HEAD
     t.integer "commission_rate"
+=======
+    t.float "commission_rate"
+>>>>>>> 262f9e7fde5b4e3aa24dbafea199a62578f9fdba
   end
 
   create_table "games", force: :cascade do |t|
