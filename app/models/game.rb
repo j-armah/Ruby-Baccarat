@@ -5,6 +5,31 @@ class Game < ActiveRecord::Base
     belongs_to :banker
     belongs_to :user
 
+    def self.deckofcards
+        deck = DeckOfCards.new
+        deck.shuffle
+        deck
+    end
+
+    def self.draw_card
+        self.deckofcards.draw
+    end
+
+    def self.player_hand
+        card1 = self.draw_card
+        card2 = self.draw_card
+        [card1, card2]
+    end
+
+    def self.banker_hand
+        card1 = self.draw_card
+        card2 = self.draw_card
+        [card1, card2]
+    end
+
+
+
+
     # Deck of cards
     # change card values
     # shuffle
@@ -24,6 +49,8 @@ class Game < ActiveRecord::Base
     # or another method where dealer draws third card
 
     # winner method
+
+    # play another game method?
 
 
 end

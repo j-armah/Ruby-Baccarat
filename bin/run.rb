@@ -1,10 +1,13 @@
 require_relative '../config/environment'
 require 'deck-of-cards'
 
-puts "hello world"
-<<<<<<< HEAD
-binding.pry
-=======
+
+#binding.pry
+
 # deck = DeckOfCards.new
+# deck.shuffle
 # p deck
->>>>>>> 262f9e7fde5b4e3aa24dbafea199a62578f9fdba
+p Game.player_hand
+# deck = Game.deckofcards
+#deck.shuffle
+binding.pry

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-User.create(username: "Superman", balance: 10000) 
-=======
 User.destroy_all
 Banker.destroy_all
 Game.destroy_all
@@ -19,4 +15,3 @@ b1 = Banker.first
 b2 = Banker.second
 
 Game.create(user_id: u1.id, banker_id: b1.id)
->>>>>>> 262f9e7fde5b4e3aa24dbafea199a62578f9fdba
