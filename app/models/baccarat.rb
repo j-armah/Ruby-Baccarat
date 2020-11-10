@@ -36,6 +36,8 @@ class Baccarat
             if @@user
                 self.display_menu
             else
+                puts "Invalid username or password. Please try again or sign up."
+                sleep(2)
                 self.auth_sequence
             end
         else
@@ -54,7 +56,9 @@ class Baccarat
         choices = {"Play Baccarat" => 1,
                 "See my game results" => 2,
                 "See my balance" => 3,
-                "Deposit money" => 4
+                "Deposit money" => 4,
+                "Delete user" => 5,
+                "Exit app" => 6
                 }
         action = @@prompt.select("What would you like to do?", choices)
         case action
@@ -69,7 +73,23 @@ class Baccarat
             self.display_menu
         when 4
             self.deposit_money
+        when 5
+            self.delete_user
+        when 6
+            puts "Good bye"
+            sleep(2)
+            exit
         end
+    end
+
+    def self.delete_user
+        @@prompt.select("What user would you like to remove") do |menu|
+            User.all.select do |user_element|  #work on this, make password required - adam
+                menu.choice user_element.username, user_element.delete
+            end
+        end
+        self.welcome
+
     end
 
     # Choose banker
@@ -85,7 +105,7 @@ class Baccarat
     def self.game_results
         # binding.pry
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
-        Your winning percentage is #{@@user.games.where(outcome: 'win').count/@@user.games.count.to_f.round(2)}%."
+        Your winning percentage is #{100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f.round(2)}%."
         sleep(3)
         self.display_menu
     end
