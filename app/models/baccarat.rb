@@ -11,9 +11,8 @@ class Baccarat
     @@prompt = TTY::Prompt.new
     @@artii = Artii::Base.new :font => 'slant'
     @@user = nil
-    @@user_card3_value  = nil
 
-    ####### CLI FRAMEWORK/SKELETON #######
+    ####### CLI FRAMEWORK/SKELETON
     # def welcome
     #     system('clear')
     #     puts @@artii.asciify("Welcome to")
@@ -55,6 +54,45 @@ class Baccarat
     #     end
     # end
 
+    def play_game
+        # Create deck
+        Baccarat.value_cards
+
+        # Set wager, bet on player, banker, tie
+
+        # Play round one
+        puts "Round 1, Player and Dealer draw two cards.\n\n"
+        sleep(3)
+        Baccarat.player_round_one
+        puts "\n\n"
+        sleep(3)
+        Baccarat.banker_round_one
+        puts "\n\n"
+
+        sleep(3)
+
+        # If .winner is not nil, someone won. Else continue to round 2
+        if Baccarat.winner != nil
+            return Baccarat.winner # Go to play_again?
+        end
+
+        # Play round two
+
+        puts "\nRound 2\n\n"
+        sleep(3)
+        Baccarat.player_round_two
+        puts "\n\n\n"
+        sleep(3)
+        Baccarat.banker_round_two
+
+        # Set outcome of user. Did the user bet one the right outcome? 
+        # Banker win? Player win? Tie? 
+
+        # Would you like to play again?
+        # Return to menu?
+
+    end
+
     # Deck set
     def self.deckofcards
         DeckOfCards.new.shuffle
@@ -86,7 +124,7 @@ class Baccarat
     def self.wager
         if @user.balance == 0
             puts "You do not have enough funds to play"
-            # Back to main menu method here - self.main_menu or something
+            # Back to main menu method here - self.display_menu or something
         else
             puts "Your current balance is #{@user.balance}"
             puts "Enter your wager"
@@ -104,6 +142,7 @@ class Baccarat
             end
         end
     end
+
 
     def self.draw_card
         self.value_cards.sample
@@ -177,57 +216,76 @@ class Baccarat
     end
 
     def self.banker_round_two #this is only called after player round 2
-        if @@user_card3_value == 0 || @@user_card3_value == 9 || @@user_card3_value == 1
+        if @@playerhand[2] == 0 || @@playerhand[2] == 9 || @@playerhand[2] == 1
             if @@banker_hand_value.between?(4,7)
-                puts "banker stays" #go to winner? 
+                puts "Banker stays" #go to winner? 
             else 
-                "banker draws" #make banker draw 3rd, then go to winner?
+                puts "Banker draws" 
+                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
             end
-        elsif @@user_card3_value == 2 || @@user_card3_value == 3
+        elsif @@playerhand[2] == 2 || @@playerhand[2] == 3
             if @@banker_hand_value.between?(5,7)
-                puts "banker stays" #go to winner? 
+                puts "Banker stays" #go to winner? 
             else 
-                "banker draws" #make banker draw 3rd, then go to winner?
+                puts "Banker draws" 
+                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
             end
-        elsif @@user_card3_value == 4 || @@user_card3_value == 5
+        elsif @@playerhand[2] == 4 || @@playerhand[2] == 5
             if @@banker_hand_value.between?(6,7)
-                puts "banker stays" #go to winner? 
+                puts "Banker stays" #go to winner? 
             else 
-                "banker draws" #make banker draw 3rd, then go to winner?
+                puts "Banker draws" 
+                self.banker_round_two_draw  #make banker draw 3rd, then go to winner?
             end
-        elsif @@user_card3_value == 6 || @@user_card3_value == 7
+        elsif @@playerhand[2] == 6 || @@playerhand[2] == 7
             if @@banker_hand_value == 7
-                puts "banker stays" #go to winner? 
+                puts "Banker stays" #go to winner? 
             else 
-                "banker draws" #make banker draw 3rd, then go to winner?
+                puts "Banker draws" 
+                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
             end
-        elsif @@user_card3_value == 8
+        elsif @@playerhand[2] == 8
             if @@banker_hand_value.between?(3,7)
-                puts "banker stays" #go to winner? 
+                puts "Banker stays" #go to winner? 
             else 
-                "banker draws" #make banker draw 3rd, then go to winner?
+                puts "Banker draws" 
+                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
             end
-    end
+        end
+        self.winner #go to check winner
+    end 
 
-    # Helper for round two player draw. 
+    # Helper for round two player draw.. can rename w/o "helper" 
     def self.player_round_two_helper(hand_value) #after we check for 2 card winner // Why user&player?
         if hand_value <= 5 
             puts "The player hand value is #{hand_value}, draw again"
-            user_card3 = self.draw_card
-            @@user_card3_value = user_card3[1][:value]
-            puts "The player draws: #{user_card3[0]}"
-            hand_value += @@user_card3_value
+            player_card3 = self.draw_card
+            player_card3_value = player_card3[1][:value]
+            @@playerhand << player_card3_value
+            puts "The player draws: #{player_card3[0]}"
+            hand_value += player_card3_value
             @@player_hand_value = hand_value
-            # Should automatically reduce value by 10 if goes over 10, due to helper
-            @@player_hand_value = self.hand_over_ten(@@player_hand_value)
+            @@player_hand_value = self.hand_over_ten(@@player_hand_value)  # Should automatically reduce value by 10 if goes over 10, due to helper
             puts "The player hand value is now #{@@player_hand_value}"
-        else
-            # No need to check for 8 or 9? Would have already gone to winner method
-            puts "The player will stay, hand value is: #{@@player_hand_value}"
+        else #if player hand val is 6,7
+            puts "The player will stay, hand value is: #{@@player_hand_value}"  #8 or 9 Would have already gone to winner method, 6,7 banker would stay
+            if @@banker_hand_value.between?(0,5)
+                self.banker_round_two_draw
+                #stand if banker has a 6,7
+            end
+            self.winner
         end
-        binding.pry
-
         @@player_hand_value 
+    end
+
+    def self.banker_round_two_draw
+        puts "The banker draws a card"
+        banker_card3 = self.draw_card
+        @@bankerhand << banker_card3
+        puts "The banker drew #{banker_card3[0]}"
+        @@banker_hand_value += banker_card3[1][:value]
+        @@banker_hand_value = self.hand_over_ten(@@banker_hand_value)
+        puts "Banker hand value is now #{@@banker_hand_value}"
     end
 
     ### POST ROUND 2 WINNER CHECK, three card winner check ###
@@ -238,9 +296,9 @@ class Baccarat
 
 
     def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
-        if !@@playerhand[2]
+        if !@@playerhand[2] && !@@bankerhand[2]
             self.two_card_winner
-        elsif @@playerhand[2]
+        else
             self.three_card_winner
         end
         #go to play again? method
@@ -252,16 +310,22 @@ class Baccarat
 
     def self.two_card_winner 
         if (@@player_hand_value == 8 || @@player_hand_value == 9) && (@@banker_hand_value < @@player_hand_value)
-            puts "player wins"
+            p "Player wins!"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value > @@player_hand_value)
-            puts "banker wins"
+            p "Banker wins"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
-            puts "draw"
+            p "Tie"
         end
     end
 
-    def three_card_winner
-
+    def self.three_card_winner
+        if @@player_hand_value > @@banker_hand_value
+            p "Player wins!"
+        elsif @@player_hand_value < @@banker_hand_value
+            p "Banker wins!"
+        else
+            p "Tie"
+        end
     end
 end
 

@@ -4,19 +4,22 @@ require_relative '../config/environment'
 
 #p Baccarat.wager
 # testing round 1 and 2
-Baccarat.player_round_one
-Baccarat.banker_round_one
+# puts "Round 1"
+# Baccarat.player_round_one
+# Baccarat.banker_round_one
+# Baccarat.winner
 
-# puts "\n\n\n"
-Baccarat.winner
-Baccarat.player_round_two
-Baccarat.banker_round_two
+# puts "\n\n\nSecond round"
+# Baccarat.player_round_two
+# Baccarat.banker_round_two
 
-binding.pry
+#Baccarat.winner
+
+#binding.pry
 
 
-# game = Baccarat.new
-# game.welcome
+game = Baccarat.new
+game.play_game
 
 #binding.pry
 
