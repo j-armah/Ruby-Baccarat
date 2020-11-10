@@ -4,16 +4,8 @@ require 'deck-of-cards'
 
 #binding.pry
 
-Game.player_hand
 
-
-
-
-
-
-
-
-
+p Baccarat.banker_hand
 
 #Game.card_revalue
 
