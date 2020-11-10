@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
     def self.signup
         username = @@prompt.ask("What is your name?")
         password = @@prompt.mask("What is your password?")
-        self.create(username: username, password: password)
+        self.create(username: username, password: password, balance: 10_000)
     end
 
     def self.login
