@@ -14,4 +14,4 @@ Banker.create(name: "Zodd", commission_rate: 0.95)
 b1 = Banker.first
 b2 = Banker.second
 
-Game.create(user_id: u1.id, banker_id: b1.id)
+#Game.create(user_id: u1.id, banker_id: b1.id)
