@@ -38,6 +38,10 @@ class Game < ActiveRecord::Base
         self.value_cards.sample
     end
 
+    def player_hand_helper(hand_value)
+        puts "hey"
+    end
+
     def self.player_hand
         puts "The player draws two cards."
         sleep(1)
@@ -65,6 +69,8 @@ class Game < ActiveRecord::Base
             puts "The player will stay, hand value is: #{player_hand_value}"
         end
     end
+
+
 
     def self.banker_hand
         banker_card1 = self.draw_card
