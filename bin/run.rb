@@ -19,7 +19,7 @@ require_relative '../config/environment'
 
 
 game = Baccarat.new
-game.play_game
+game.run
 
 #binding.pry
 

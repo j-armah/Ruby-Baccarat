@@ -13,79 +13,129 @@ class Baccarat
     @@user = nil
 
     ####### CLI FRAMEWORK/SKELETON
-    # def welcome
-    #     system('clear')
-    #     puts @@artii.asciify("Welcome to")
-    #     puts @@artii.asciify("Baccarat ( Lite )!")
-    #     self.auth_sequence
-    # end
+    def run
+        self.class.welcome
+    end
 
-    # def auth_sequence
-    #     sleep(1.5)
-    #     @@user = User.first
-    #     self.display_menu
-    # end
+    def self.welcome
+        system('clear')
+        puts @@artii.asciify("Welcome to")
+        puts @@artii.asciify("Baccarat!")
+        self.auth_sequence
+    end
+
+    def self.auth_sequence
+        sleep(1)
+        @@user = User.first
+        self.display_menu
+        # choices = { "Log In" => 1,
+        #     "Sign Up" => 2
+        # }
+        # choice = @@prompt.select("Would you like to sign up or log in?", choices)
+        # if choice == 1
+        #     @@user = User.login
+        #     if @@user
+        #         self.display_menu
+        #     else
+        #         self.auth_sequence
+        #     end
+        # else
+        #     @@user = User.signup
+        #     if @@user
+        #         self.display_menu
+        #     else
+        #         self.auth_sequence
+        #     end
+        # end
+    end
     
-    # def display_menu
-    #     # Displays the options to the user!
-    #     system('clear')
-    #     choices = { "Play Baccarat" => 1,
-    #             "Set difficulty" => 2, 
-    #             "See my game results" => 3,
-    #             "See leaderboard" => 4,
-    #             "Select from all categories" => 5
-    #         }
-    #     action = @@prompt.select("What would you like to do?", choices)
-    #     case action
-    #     when 1 
-    #         random_cat = Category.all.sample # gets random category from those seeded
-    #         api_data = self.get_category_data(random_cat) # uses helper method to get clues from API
-    #         self.play_game(random_cat.id, api_data) # plays the game!
-    #     when 2
-    #         puts "You chose to search"
-    #     when 3
-    #         puts "You chose to see results"
-    #     when 4
-    #         puts "You chose to see your game results"
-    #     when 5
-    #         chosen_category = self.choose_category # uses helper method to display and get category choice
-    #         api_data = self.get_category_data(chosen_category) # uses helper method to get clues from API
-    #         self.play_game(chosen_category.id, api_data) # plays the game!
-    #     end
-    # end
+    def self.display_menu  # Displays the options to the user! 
+        system('clear')
+        choices = {"Play Baccarat" => 1,
+                "See my game results" => 2,
+                "See my balance" => 3,
+                }
+        action = @@prompt.select("What would you like to do?", choices)
+        case action
+        when 1 
+            # @banker = self.choose_banker
+            #Baccarat.play_game
+            self.choose_banker
+        when 2
+            puts "You chose to see results"
+            #self.game_results
+        when 3
+            self.view_balance
+           # puts "Your balance is currently $#{@@user.balance}"
+        end
+    end
 
-    def play_game
-        # Create deck
-        Baccarat.value_cards
+    # Choose banker
+    def self.choose_banker #go through banker.all and output bankers
+         @@banker = @@prompt.select("What banker would you like to play against?") do |menu|
+                Banker.all.select do |banker_element|
+                    menu.choice banker_element.name, banker_element
+                end
+            end
+        Baccarat.play_game
+    end
 
-        # Set wager, bet on player, banker, tie
+    def self.game_results
+        
+    end
+    
+    def self.view_balance
+        puts "Your balance is #{@@user.balance}"
+        sleep(3)
+        self.display_menu
+    end
+
+    def self.play_game
+        #binding.pry
+        # @banker = Banker.all.sample
+        # @banker = Banker.find_by(name: @@banker)
+        @game = Game.create(user_id: @@user.id, banker_id: @@banker.id)
+        
+        self.value_cards # Create deck
+        
+        wager = self.wager # Set wager, bet on player, banker, tie
+
+        bet_choice = self.place_bet # What would you like to place your bet on? Banker, Player, or Tie?
 
         # Play round one
-        puts "Round 1, Player and Dealer draw two cards.\n\n"
-        sleep(3)
-        Baccarat.player_round_one
+        puts "Round 1, Player and Banker draw two cards.\n\n"
+        #sleep(3)
+        self.player_round_one
         puts "\n\n"
-        sleep(3)
-        Baccarat.banker_round_one
+        #sleep(3)
+        self.banker_round_one
         puts "\n\n"
 
-        sleep(3)
+        #sleep(3)
 
         # If .winner is not nil, someone won. Else continue to round 2
-        if Baccarat.winner != nil
-            return Baccarat.winner # Go to play_again?
+        if self.winner != nil
+            self.correct_bet(bet_choice)
+            self.play_again
         end
 
         # Play round two
 
         puts "\nRound 2\n\n"
-        sleep(3)
-        Baccarat.player_round_two
+        #sleep(3)
+        self.player_round_two
         puts "\n\n\n"
-        sleep(3)
-        Baccarat.banker_round_two
+        #sleep(3)
+        self.banker_round_two
 
-        # Set outcome of user. Did the user bet one the right outcome? 
+        # Check if user picked the winner correctly, or lost
+        self.correct_bet(bet_choice)
+
+        self.play_again
+
+        #binding.pry
+
+        # Set outcome of user. Did the user bet on the right outcome? 
         # Banker win? Player win? Tie? 
 
         # Would you like to play again?
@@ -122,16 +172,20 @@ class Baccarat
     # WAGER METHOD SOMEWHERE, needs to check balance of user
     # How do I see @user.balance...? No users so no way to test right now?
     def self.wager
-        if @user.balance == 0
+        if @@user.balance == 0
             puts "You do not have enough funds to play"
+            puts "Returning to main menu"
+            sleep(4)
+            self.display_menu
             # Back to main menu method here - self.display_menu or something
         else
-            puts "Your current balance is #{@user.balance}"
+            puts "Your current balance is #{@@user.balance}"
             puts "Enter your wager"
             wager_amount = gets.chomp.to_i
             @game.update(wager: wager_amount)
+            puts "You are betting #{wager_amount}"
             # Make sure wager amount does not exceed balance, helper?
-            if wager_amount > @user.balance
+            if wager_amount > @@user.balance
                 puts "You do not have enough money to wager #{wager_amount}. Your balance is #{@@user.balance}"
                 self.wager
             elsif wager_amount <= 0
@@ -143,14 +197,42 @@ class Baccarat
         end
     end
 
+    def self.place_bet
+        bet_choice = @@prompt.select("Place bet on Banker, Player, or Tie") do |menu|
+            menu.choice "banker"
+            menu.choice "player"
+            menu.choice "tie"
+        end
+        bet_choice
+    end
+
+    def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
+        if self.winner.downcase.include?(bet_choice)
+            @game.update(outcome: "win")
+            self.payout(bet_choice)
+        else
+            @game.update(outcome: "loss")
+            @@user.balance -= @game.wager
+            binding.pry
+        end
+    end
 
     def self.draw_card
         self.value_cards.sample
     end
 
+    def self.payout(bet_choice)
+        if bet_choice == "player"
+            @@user.balance += @game.wager
+        elsif bet_choice == "banker"
+            @@user.balance += @game.wager * @@banker.commission_rate
+        elsif bet_choice == "tie"
+            @@user.balance += @game.wager * 8
+        end
+    end
 
 
-    def self.hand_over_ten(hand_value) #will subtract the hand value if >10. this helper method will be called after every draw for player&dealer
+    def self.hand_over_ten(hand_value) #will subtract the hand value if >10. this helper method will be called after every draw for player&banker
         #binding.pry
         if hand_value >= 10
             return hand_value -= 10
@@ -161,7 +243,7 @@ class Baccarat
 
     # Round 1
     def self.player_round_one #must add helper method to check if >10
-        puts "The player draws two cards."
+        puts "Player draws two cards."
         #sleep(1)
         player_card1 = self.draw_card #look into combining lines here
         @@playerhand << player_card1
@@ -184,7 +266,7 @@ class Baccarat
 
 
     def self.banker_round_one #must add helper method to check if >10
-        puts "The banker draws two cards"
+        puts "Banker draws two cards"
         #sleep(1)
         banker_card1 = self.draw_card
         @@bankerhand << banker_card1
@@ -258,20 +340,22 @@ class Baccarat
     # Helper for round two player draw.. can rename w/o "helper" 
     def self.player_round_two_helper(hand_value) #after we check for 2 card winner // Why user&player?
         if hand_value <= 5 
-            puts "The player hand value is #{hand_value}, draw again"
+            puts "Player hand value is #{hand_value}, draw again"
             player_card3 = self.draw_card
             player_card3_value = player_card3[1][:value]
             @@playerhand << player_card3_value
-            puts "The player draws: #{player_card3[0]}"
+            puts "Player draws: #{player_card3[0]}"
             hand_value += player_card3_value
             @@player_hand_value = hand_value
             @@player_hand_value = self.hand_over_ten(@@player_hand_value)  # Should automatically reduce value by 10 if goes over 10, due to helper
-            puts "The player hand value is now #{@@player_hand_value}"
+            puts "Player hand value is now #{@@player_hand_value}"
         else #if player hand val is 6,7
-            puts "The player will stay, hand value is: #{@@player_hand_value}"  #8 or 9 Would have already gone to winner method, 6,7 banker would stay
+            puts "Player will stay, hand value is: #{@@player_hand_value}"  #8 or 9 Would have already gone to winner method, 6,7 banker would stay
             if @@banker_hand_value.between?(0,5)
                 self.banker_round_two_draw
                 #stand if banker has a 6,7
+            else
+                self.winner
             end
             self.winner
         end
@@ -279,10 +363,10 @@ class Baccarat
     end
 
     def self.banker_round_two_draw
-        puts "The banker draws a card"
+        puts "Banker draws a card"
         banker_card3 = self.draw_card
         @@bankerhand << banker_card3
-        puts "The banker drew #{banker_card3[0]}"
+        puts "Banker drew #{banker_card3[0]}"
         @@banker_hand_value += banker_card3[1][:value]
         @@banker_hand_value = self.hand_over_ten(@@banker_hand_value)
         puts "Banker hand value is now #{@@banker_hand_value}"
@@ -305,6 +389,18 @@ class Baccarat
     end
 
     ### AFTER WINNER, DO YOU WANT TO PLAY AGAIN METHOD ###
+
+    def self.play_again
+        choice = @@prompt.select("Do you want to play again?") do |menu|
+            menu.choice "yes"
+            menu.choice "no"
+        end
+        if choice == "yes"
+            self.play_game
+        else
+            self.display_menu
+        end
+    end
 
     private
 
@@ -352,8 +448,8 @@ end
 
     # draw card method
 
-    # third_draw? if dealer needs to draw another card then use helper method 
-    # or another method where dealer draws third card
+    # third_draw? if banker needs to draw another card then use helper method 
+    # or another method where banker draws third card
 
     # winner method
 
