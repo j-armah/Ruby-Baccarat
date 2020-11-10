@@ -2,13 +2,17 @@ require 'pry'
 require_relative '../config/environment'
 
 
-#binding.pry
 #p Baccarat.wager
 # testing round 1 and 2
 Baccarat.player_round_one
-#Baccarat.banker_round_one
-puts "\n\n\n"
+Baccarat.banker_round_one
+
+# puts "\n\n\n"
+Baccarat.winner
 Baccarat.player_round_two
+Baccarat.banker_round_two
+
+binding.pry
 
 
 # game = Baccarat.new

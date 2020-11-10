@@ -11,6 +11,7 @@ class Baccarat
     @@prompt = TTY::Prompt.new
     @@artii = Artii::Base.new :font => 'slant'
     @@user = nil
+    @@user_card3_value  = nil
 
     ####### CLI FRAMEWORK/SKELETON #######
     # def welcome
@@ -113,7 +114,7 @@ class Baccarat
     def self.hand_over_ten(hand_value) #will subtract the hand value if >10. this helper method will be called after every draw for player&dealer
         #binding.pry
         if hand_value >= 10
-            hand_value -= 10
+            return hand_value -= 10
         else
             hand_value 
         end
@@ -121,10 +122,9 @@ class Baccarat
 
     # Round 1
     def self.player_round_one #must add helper method to check if >10
-        #binding.pry
         puts "The player draws two cards."
         #sleep(1)
-        player_card1 = self.draw_card
+        player_card1 = self.draw_card #look into combining lines here
         @@playerhand << player_card1
         player_card2 = self.draw_card
         @@playerhand << player_card2
@@ -139,6 +139,8 @@ class Baccarat
         puts "Player's hand value is: #{@@player_hand_value}"
         @@player_hand_value
         #self.player_hand_helper(player_hand_value)
+        # binding.pry
+
     end
 
 
@@ -159,6 +161,8 @@ class Baccarat
 
         puts "Banker's hand value is: #{@@banker_hand_value}"
         @@banker_hand_value 
+        # binding.pry
+
     end
 
     ##### AFTER ROUND 1 CHECK FOR WINNER. IF NO WINNER PROCEED TO ROUND 2 ####
@@ -172,19 +176,47 @@ class Baccarat
 
     end
 
-    # Very complicated...
-    def self.banker_round_two
-
+    def self.banker_round_two #this is only called after player round 2
+        if @@user_card3_value == 0 || @@user_card3_value == 9 || @@user_card3_value == 1
+            if @@banker_hand_value.between?(4,7)
+                puts "banker stays" #go to winner? 
+            else 
+                "banker draws" #make banker draw 3rd, then go to winner?
+            end
+        elsif @@user_card3_value == 2 || @@user_card3_value == 3
+            if @@banker_hand_value.between?(5,7)
+                puts "banker stays" #go to winner? 
+            else 
+                "banker draws" #make banker draw 3rd, then go to winner?
+            end
+        elsif @@user_card3_value == 4 || @@user_card3_value == 5
+            if @@banker_hand_value.between?(6,7)
+                puts "banker stays" #go to winner? 
+            else 
+                "banker draws" #make banker draw 3rd, then go to winner?
+            end
+        elsif @@user_card3_value == 6 || @@user_card3_value == 7
+            if @@banker_hand_value == 7
+                puts "banker stays" #go to winner? 
+            else 
+                "banker draws" #make banker draw 3rd, then go to winner?
+            end
+        elsif @@user_card3_value == 8
+            if @@banker_hand_value.between?(3,7)
+                puts "banker stays" #go to winner? 
+            else 
+                "banker draws" #make banker draw 3rd, then go to winner?
+            end
     end
 
     # Helper for round two player draw. 
-    def self.player_round_two_helper(hand_value) #after we check for 2 card winner
+    def self.player_round_two_helper(hand_value) #after we check for 2 card winner // Why user&player?
         if hand_value <= 5 
             puts "The player hand value is #{hand_value}, draw again"
             user_card3 = self.draw_card
-            user_card3_value = user_card3[1][:value]
+            @@user_card3_value = user_card3[1][:value]
             puts "The player draws: #{user_card3[0]}"
-            hand_value += user_card3_value
+            hand_value += @@user_card3_value
             @@player_hand_value = hand_value
             # Should automatically reduce value by 10 if goes over 10, due to helper
             @@player_hand_value = self.hand_over_ten(@@player_hand_value)
@@ -193,6 +225,8 @@ class Baccarat
             # No need to check for 8 or 9? Would have already gone to winner method
             puts "The player will stay, hand value is: #{@@player_hand_value}"
         end
+        binding.pry
+
         @@player_hand_value 
     end
 
@@ -203,11 +237,7 @@ class Baccarat
     # Outcome = Did you win/lose/tie? store as string.
 
 
-    def self.winner  #if one of these true // we want this methhod to end the game, output who won the game// we then have to check our suers bet vs this outcome
-        #binding.pry
-
-        #self.player_hand
-        #p @@player_hand_value
+    def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
         if !@@playerhand[2]
             self.two_card_winner
         elsif @@playerhand[2]
@@ -220,12 +250,12 @@ class Baccarat
 
     private
 
-    def two_card_winner 
-        if @@player_hand_value == 8 || @@player_hand_value == 9 && (@@banker_hand_value < @@player_hand_value)
+    def self.two_card_winner 
+        if (@@player_hand_value == 8 || @@player_hand_value == 9) && (@@banker_hand_value < @@player_hand_value)
             puts "player wins"
-        elsif @@banker_hand_value == 8 || @@banker_hand_value == 9  && (@@banker_hand_value > @@player_hand_value)
+        elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value > @@player_hand_value)
             puts "banker wins"
-        elsif @@banker_hand_value == 8 || @@banker_hand_value == 9  && (@@banker_hand_value == @@player_hand_value)
+        elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
             puts "draw"
         end
     end
