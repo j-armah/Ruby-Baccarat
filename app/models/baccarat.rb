@@ -224,10 +224,13 @@ class Baccarat
     def self.payout(bet_choice)
         if bet_choice == "player"
             @@user.balance += @game.wager
+            puts "You won #{@game.wager}"
         elsif bet_choice == "banker"
             @@user.balance += @game.wager * @@banker.commission_rate
+            puts "You won #{@game.wager * @@banker.commission_rate}"
         elsif bet_choice == "tie"
             @@user.balance += @game.wager * 8
+            puts "You won #{@game.wager * 8}!"
         end
     end
 
@@ -395,10 +398,16 @@ class Baccarat
             menu.choice "yes"
             menu.choice "no"
         end
-        if choice == "yes"
-            self.play_game
-        else
+        if @@user.balance <= 0
+            puts "You lost all your money... Returning to main menu."
+            sleep(4)
             self.display_menu
+        else
+            if choice == "yes"
+                self.play_game
+            else
+                self.display_menu
+            end
         end
     end
 
