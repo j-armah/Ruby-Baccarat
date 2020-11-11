@@ -140,10 +140,10 @@ class Baccarat
         # Play round two
 
         puts "\nRound 2\n\n"
-        #sleep(3)
+        sleep(2)
         self.player_round_two
         puts "\n\n\n"
-        #sleep(3)
+        sleep(2)
         self.banker_round_two
 
         self.correct_bet(bet_choice) # # Check if user picked the winner correctly, or lost
@@ -208,6 +208,7 @@ class Baccarat
     end
 
     def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
+        
         if self.winner.downcase.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
@@ -347,8 +348,8 @@ class Baccarat
             if @@banker_hand_value.between?(0,5)
                 self.banker_round_two_draw
                 #stand if banker has a 6,7
-            else
-                self.winner
+            # else
+            #     self.winner
             end
             self.winner
         end
@@ -373,13 +374,13 @@ class Baccarat
 
 
     def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
+        # winner method getting passed through twice for some reason
         if !@@playerhand[2] && !@@bankerhand[2]
             self.two_card_winner
         else
             self.three_card_winner
         end
-
-        #go to play again? method
+        #binding.pry
     end
 
     ### AFTER WINNER, DO YOU WANT TO PLAY AGAIN METHOD ###
@@ -413,10 +414,8 @@ class Baccarat
     def self.two_card_winner 
         if (@@player_hand_value == 8 || @@player_hand_value == 9) && (@@banker_hand_value < @@player_hand_value)
             p "Player wins!"
-
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value > @@player_hand_value)
             p "Banker winsyyyy"
-
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
             p "Tie"
         end
