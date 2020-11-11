@@ -131,8 +131,7 @@ class Baccarat
         #sleep(3)
 
         # If .winner is not nil, someone won. Else continue to round 2
-        win = self.winner
-        if win != nil
+        if self.winner != nil
             self.correct_bet(bet_choice)
             self.play_again
         end
