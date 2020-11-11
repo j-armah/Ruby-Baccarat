@@ -168,7 +168,7 @@ class Baccarat
         deck
     end
 
-    WAGER METHOD 
+    #WAGER METHOD 
     def self.wager
         if @@user.balance == 0
             puts "You do not have enough funds to play"
