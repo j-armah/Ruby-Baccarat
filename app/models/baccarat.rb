@@ -82,15 +82,15 @@ class Baccarat
         end
     end
 
-    def self.delete_user
-        @@prompt.select("What user would you like to remove") do |menu|
-            User.all.select do |user_element|  #work on this, make password required - adam
-                menu.choice user_element.username, user_element.delete
-            end
-        end
-        self.welcome
+    # def self.delete_user
+    #     @@prompt.select("What user would you like to remove") do |menu|
+    #         User.all.select do |user_element|  #work on this, make password required - adam
+    #             menu.choice user_element.username, user_element.delete
+    #         end
+    #     end
+    #     self.welcome
 
-    end
+    # end
 
     # Choose banker
     def self.choose_banker #go through banker.all and output bankers
@@ -130,14 +130,13 @@ class Baccarat
         puts "\n\n"
         #sleep(3)
 
-        # If .winner is not nil, someone won. Else continue to round 2
-        if self.winner != nil
-            self.correct_bet(bet_choice)
+        # binding.pry
+        if self.two_card_winner != nil      #checking if there is initial win, if yes we will restart the game
+            self.correct_bet(bet_choice)    # Else, head to round 2
             self.play_again
         end
 
         # Play round two
-
         puts "\nRound 2\n\n"
         sleep(2)
         self.player_round_two
@@ -207,8 +206,8 @@ class Baccarat
     end
 
     def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
-        
-        if self.winner.downcase.include?(bet_choice)
+        #may be double printing the wins here
+        if self.three_card_winner.downcase.include?(bet_choice) || self.two_card_winner.downcase.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
         else
@@ -236,7 +235,6 @@ class Baccarat
         end
     end
 
-
     def self.hand_over_ten(hand_value) #will subtract the hand value if >10
         if hand_value >= 10
             return hand_value -= 10
@@ -250,15 +248,16 @@ class Baccarat
         puts "Player draws two cards."
         sleep(1)
 
-        @@playerhand << self.draw_card
-        @@playerhand << self.draw_card
-        player_card1_value = @@playerhand[0][1][:value]
-        player_card2_value = @@playerhand[1][1][:value]
+        player_card1 = self.draw_card
+        @@playerhand << player_card1
+        player_card2 = self.draw_card
+        @@playerhand << player_card2
+        player_card1_value = player_card1[1][:value]
+        player_card2_value = player_card2[1][:value]
 
-        puts "Player's Hand: #{@@playerhand[0][0]}, #{@@playerhand[1][0]}"
+        puts "Player's Hand: #{player_card1[0]}, #{player_card2[0]}"
         sleep(1)
         @@player_hand_value = self.hand_over_ten(player_card1_value + player_card2_value)
-
         puts "Player's hand value is: #{@@player_hand_value}"
         @@player_hand_value
     end
@@ -277,8 +276,7 @@ class Baccarat
 
         puts "Banker's Hand: #{banker_card1[0]}, #{banker_card2[0]}"
         sleep(1)
-        @@banker_hand_value = banker_card1_value + banker_card2_value
-        @@banker_hand_value = self.hand_over_ten(@@banker_hand_value)
+        @@banker_hand_value = self.hand_over_ten(banker_card1_value + banker_card2_value)
 
         puts "Banker's hand value is: #{@@banker_hand_value}"
         @@banker_hand_value 
@@ -289,49 +287,54 @@ class Baccarat
     # else we go to round 2
 
     ### WE HAVE PLAYED ROUND ONE, IF THERE IS NO WINNER WE GO HERE
-    # I put everything in helper, so there's only one line here? Do we need a helper?
-    # def self.player_round_two
-    #     self.player_round_two_helper(@@player_hand_value)
 
-    # end
 
     def self.banker_round_two 
-        if @@playerhand[2] == 0 || @@playerhand[2] == 9 || @@playerhand[2] == 1
+        #If the Player stands pat (or draws no new cards), the Banker draws with a hand total of 0-5 
+        #and stays pat with a hand total of 6 or 7. 
+        if !@@playerhand[2]   
+            if @@banker_hand_value.between?(6,7)
+                puts "Banker stays"
+            elsif @@banker_hand_value.between?(0,5)
+                self.banker_round_two_draw
+            end
+
+        
+        elsif @@playerhand[2] == 0 || @@playerhand[2] == 9 || @@playerhand[2] == 1
             if @@banker_hand_value.between?(4,7)
-                puts "Banker stays" #go to winner? 
+                puts "Banker stays" 
             else 
-                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
+                self.banker_round_two_draw 
             end
         elsif @@playerhand[2] == 2 || @@playerhand[2] == 3
             if @@banker_hand_value.between?(5,7)
-                puts "Banker stays" #go to winner? 
+                puts "Banker stays" 
             else 
-                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
+                self.banker_round_two_draw 
             end
         elsif @@playerhand[2] == 4 || @@playerhand[2] == 5
             if @@banker_hand_value.between?(6,7)
-                puts "Banker stays" #go to winner? 
+                puts "Banker stays"  
             else 
-                self.banker_round_two_draw  #make banker draw 3rd, then go to winner?
+                self.banker_round_two_draw  
             end
         elsif @@playerhand[2] == 6 || @@playerhand[2] == 7
             if @@banker_hand_value == 7
-                puts "Banker stays" #go to winner? 
+                puts "Banker stays"  
             else 
-                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
+                self.banker_round_two_draw 
             end
         elsif @@playerhand[2] == 8
             if @@banker_hand_value.between?(3,7)
-                puts "Banker stays" #go to winner? 
+                puts "Banker stays"  
             else 
-                self.banker_round_two_draw #make banker draw 3rd, then go to winner?
+                self.banker_round_two_draw 
             end
         end
-        self.winner #go to check winner
+        self.three_card_winner #go to check winner
     end 
 
-    # Helper for round two player draw.. can rename w/o "helper" 
-    def self.player_round_two #after we check for 2 card winner // Why user&player?
+    def self.player_round_two # Why user&player?
         if @@player_hand_value <= 5 
             puts "Player's hand value is #{@@player_hand_value}, draw again"
             player_card3 = self.draw_card
@@ -340,17 +343,17 @@ class Baccarat
             puts "Player draws a #{player_card3[0]}"
             @@player_hand_value += player_card3_value
             
-            @@player_hand_value = self.hand_over_ten(@@player_hand_value)  # Should automatically reduce value by 10 if goes over 10, due to helper
+            @@player_hand_value = self.hand_over_ten(@@player_hand_value)  #if hand>=10, -=10
             puts "Player's hand value is now #{@@player_hand_value}"
         else #if player hand val is 6,7
             puts "Player will stay, hand value is #{@@player_hand_value}"  #8 or 9 Would have already gone to winner method, 6,7 banker would stay
-            if @@banker_hand_value.between?(0,5)
-                self.banker_round_two_draw
-                #stand if banker has a 6,7
-            # else
-            #     self.winner
-            end
-            self.winner
+            # if @@banker_hand_value.between?(0,5)
+            #     self.banker_round_two_draw
+            #     #stand if banker has a 6,7
+            # # else
+            # #     self.winner
+            # end
+            # self.winner
         end
         @@player_hand_value 
     end
@@ -365,24 +368,15 @@ class Baccarat
         puts "Banker hand value is now #{@@banker_hand_value}"
     end
 
-    ### POST ROUND 2 WINNER CHECK, three card winner check ###
-    ### PLAY_AGAIN? Method ###
-
-    ### WINNER METHOD NEEDS TO SET THE OUTCOME ###
-    # Outcome = Did you win/lose/tie? store as string.
-
-
-    def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
-        # winner method getting passed through twice for some reason
-        if !@@playerhand[2] && !@@bankerhand[2]
-            self.two_card_winner
-        else
-            self.three_card_winner
-        end
-        #binding.pry
-    end
-
-    ### AFTER WINNER, DO YOU WANT TO PLAY AGAIN METHOD ###
+    # def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
+    #     # winner method getting passed through twice for some reason
+    #     if !@@playerhand[2] && !@@bankerhand[2]
+    #         self.two_card_winner
+    #     else
+    #         self.three_card_winner
+    #     end
+    #     #binding.pry
+    # end
 
     def self.play_again
         choice = @@prompt.select("Do you want to play again?") do |menu|
@@ -416,7 +410,7 @@ class Baccarat
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value > @@player_hand_value)
             p "Banker winsyyyy"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
-            p "Tie"
+            p "Tie2"
         end
     end
 
@@ -426,7 +420,7 @@ class Baccarat
         elsif @@player_hand_value < @@banker_hand_value
             p "Banker winsxxx!"
         else
-            p "Tie"
+            p "Tie3"
         end
     end
     
