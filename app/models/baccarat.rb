@@ -132,7 +132,7 @@ class Baccarat
 
         # binding.pry
         if self.two_card_winner != nil      #checking if there is initial win, if yes we will restart the game
-            self.correct_bet(bet_choice)    # Else, head to round 2
+           # self.correct_bet(bet_choice)    # Else, head to round 2
             self.play_again
         end
 
@@ -198,16 +198,17 @@ class Baccarat
 
     def self.place_bet
         bet_choice = @@prompt.select("Place bet on Banker, Player, or Tie") do |menu|
-            menu.choice "banker"
-            menu.choice "player"
-            menu.choice "tie"
+            menu.choice "Banker"
+            menu.choice "Player"
+            menu.choice "Tie"
         end
         bet_choice
     end
 
     def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
         #may be double printing the wins here
-        if self.three_card_winner.downcase.include?(bet_choice) || self.two_card_winner.downcase.include?(bet_choice)
+        binding.pry
+        if self.three_card_winner.include?(bet_choice) || self.two_card_winner.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
         else
@@ -216,6 +217,7 @@ class Baccarat
             puts "Your bet lost, your balance was reduced by #{@game.wager}"
             # binding.pry
         end
+        binding.pry
     end
 
     def self.draw_card
@@ -411,6 +413,8 @@ class Baccarat
             p "Banker winsyyyy"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
             p "Tie"
+        else
+            return 0
         end
     end
 
