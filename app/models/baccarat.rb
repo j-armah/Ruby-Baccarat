@@ -167,24 +167,47 @@ class Baccarat
         deck
     end
 
-    WAGER METHOD 
+    #WAGER METHOD 
+    # def self.wager
+    #     if @@user.balance == 0
+    #         puts "You do not have enough funds to play"
+    #         puts "Returning to main menu"
+    #         sleep(4)
+    #         self.display_menu # Back to main menu
+    #     else
+    #         # binding.pry
+    #         puts "Your current balance is #{@@user.balance}"
+    #         puts "Enter your wager"
+    #         wager_amount = gets.chomp.to_i
+    #         self.validate_wager_amt(wager_amount)
+    #          binding.pry
+    #         @game.update(wager: wager_amount)
+    #          binding.pry
+    #         puts "You are betting #{wager_amount}"
+    #          #for some reason, after it gets the correct wager, it runs an additional time for the initial input
+    #     end
+    # end
     def self.wager
-        if @@user.balance == 0
-            puts "You do not have enough funds to play"
-            puts "Returning to main menu"
-            sleep(4)
-            self.display_menu # Back to main menu
+        if @@user.bank == 0
+            puts "You do not have sufficient funds"
+            sleep(1)
+            self.display_menu 
         else
-            # binding.pry
             puts "Your current balance is #{@@user.balance}"
-            puts "Enter your wager"
+            puts "Place your wager bet"
             wager_amount = gets.chomp.to_i
-            self.validate_wager_amt(wager_amount)
-             binding.pry
             @game.update(wager: wager_amount)
-             binding.pry
-            puts "You are betting #{wager_amount}"
-             #for some reason, after it gets the correct wager, it runs an additional time for the initial input
+            if wager_amount > @@user.balance
+                puts "Wager is greater than your balance, please place valid wager."
+                sleep(1)
+                self.wager
+            elsif wager_amount < 1
+                puts "Wager amount must be greater than 0."
+                sleep(1)
+                self.wager
+            else
+                puts "Your wager is #{@game.wager}"
+            end
         end
     end
 
