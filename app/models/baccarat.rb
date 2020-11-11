@@ -15,6 +15,7 @@ class Baccarat
         self.class.welcome
     end
 
+    # Welcome to Baccarat
     def self.welcome
         system('clear')
         puts @@artii.asciify("Welcome to")
@@ -22,6 +23,7 @@ class Baccarat
         self.auth_sequence
     end
 
+    # Login or Sign up
     def self.auth_sequence
         sleep(1)
         choices = { "Log In" => 1,
@@ -190,7 +192,7 @@ class Baccarat
     #          #for some reason, after it gets the correct wager, it runs an additional time for the initial input
     #     end
     # end
-    
+
     def self.wager
         if @@user.balance == 0
             puts "You do not have sufficient funds"
