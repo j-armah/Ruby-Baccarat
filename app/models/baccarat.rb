@@ -150,7 +150,7 @@ class Baccarat
 
         puts self.three_card_winner
         self.correct_bet(bet_choice) # # Check if user picked the winner correctly, or lost
-        #binding.pry
+        binding.pry
         self.play_again
     end
 
@@ -213,13 +213,13 @@ class Baccarat
 
     def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
         #may be double printing the wins here
-        #binding.pry
-        if self.three_card_winner.include?(bet_choice)# || self.two_card_winner.downcase.include?(bet_choice)
+        binding.pry
+        if self.three_card_winner.include?(bet_choice) || self.two_card_winner.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
-        elsif self.two_card_winner.include?(bet_choice)
-            @game.update(outcome: "win")
-            self.payout(bet_choice)
+        # elsif self.two_card_winner.include?(bet_choice)
+        #     @game.update(outcome: "win")
+        #     self.payout(bet_choice)
         else
             @game.update(outcome: "loss")
             @@user.balance -= @game.wager
