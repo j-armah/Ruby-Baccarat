@@ -12,7 +12,7 @@ class Baccarat
     @@artii = Artii::Base.new :font => 'slant'
     @@user = nil
 
-    ####### CLI FRAMEWORK/SKELETON
+    # Runs the app!
     def run
         self.class.welcome
     end
@@ -26,7 +26,6 @@ class Baccarat
 
     def self.auth_sequence
         sleep(1)
-        #@@user = User.first
         choices = { "Log In" => 1,
             "Sign Up" => 2
         }
