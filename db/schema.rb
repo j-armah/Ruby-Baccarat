@@ -21,9 +21,6 @@ ActiveRecord::Schema.define(version: 2020_11_09_192138) do
     t.string "user_id"
     t.string "banker_id"
     t.integer "wager"
-    t.integer "player_hand"
-    t.integer "banker_hand"
-    t.integer "player_third_card"
     t.string "outcome"
   end
 

@@ -109,11 +109,13 @@ class Baccarat
         sleep(3)
         self.display_menu
     end
+    
 
     def self.play_game
 
         @game = Game.create(user_id: @@user.id, banker_id: @@banker.id)
-        
+        @@playerhand.clear
+        @@bankerhand.clear
         self.value_cards # Create deck
         
         wager = self.wager # Set wager, bet on player, banker, tie
@@ -131,8 +133,10 @@ class Baccarat
         #sleep(3)
 
         # binding.pry
-        if self.two_card_winner != nil      #checking if there is initial win, if yes we will restart the game
-           # self.correct_bet(bet_choice)    # Else, head to round 2
+        if !self.two_card_winner.include?("No")    #checking if there is initial win, if yes we will restart the game
+            puts self.two_card_winner
+            self.correct_bet(bet_choice)    # Else, head to round 2
+            #binding.pry
             self.play_again
         end
 
@@ -144,7 +148,9 @@ class Baccarat
         sleep(2)
         self.banker_round_two
 
+        puts self.three_card_winner
         self.correct_bet(bet_choice) # # Check if user picked the winner correctly, or lost
+        binding.pry
         self.play_again
     end
 
@@ -211,6 +217,9 @@ class Baccarat
         if self.three_card_winner.include?(bet_choice) || self.two_card_winner.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
+        # elsif self.two_card_winner.include?(bet_choice)
+        #     @game.update(outcome: "win")
+        #     self.payout(bet_choice)
         else
             @game.update(outcome: "loss")
             @@user.balance -= @game.wager
@@ -294,14 +303,14 @@ class Baccarat
     def self.banker_round_two 
         #If the Player stands pat (or draws no new cards), the Banker draws with a hand total of 0-5 
         #and stays pat with a hand total of 6 or 7. 
+        binding.pry
         if !@@playerhand[2]   
+            binding.pry
             if @@banker_hand_value.between?(6,7)
                 puts "Banker stays"
             elsif @@banker_hand_value.between?(0,5)
                 self.banker_round_two_draw
             end
-
-        
         elsif @@playerhand[2] == 0 || @@playerhand[2] == 9 || @@playerhand[2] == 1
             if @@banker_hand_value.between?(4,7)
                 puts "Banker stays" 
@@ -349,25 +358,21 @@ class Baccarat
             puts "Player's hand value is now #{@@player_hand_value}"
         else #if player hand val is 6,7
             puts "Player will stay, hand value is #{@@player_hand_value}"  #8 or 9 Would have already gone to winner method, 6,7 banker would stay
-            # if @@banker_hand_value.between?(0,5)
-            #     self.banker_round_two_draw
-            #     #stand if banker has a 6,7
-            # # else
-            # #     self.winner
-            # end
-            # self.winner
         end
         @@player_hand_value 
     end
 
     def self.banker_round_two_draw
         puts "Banker draws a card"
+        sleep(0.5)
         banker_card3 = self.draw_card
         @@bankerhand << banker_card3
         puts "Banker drew #{banker_card3[0]}"
+        sleep(2)
         @@banker_hand_value += banker_card3[1][:value]
         @@banker_hand_value = self.hand_over_ten(@@banker_hand_value)
         puts "Banker hand value is now #{@@banker_hand_value}"
+        sleep(2)
     end
 
     # def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
@@ -408,23 +413,23 @@ class Baccarat
 
     def self.two_card_winner 
         if (@@player_hand_value == 8 || @@player_hand_value == 9) && (@@banker_hand_value < @@player_hand_value)
-            p "Player wins!"
+            "Player wins!"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value > @@player_hand_value)
-            p "Banker winsyyyy"
+            "Banker winsyyyy"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
-            p "Tie"
+            "Tie2"
         else
-            return 0
+            "No two card win"
         end
     end
 
     def self.three_card_winner
         if @@player_hand_value > @@banker_hand_value
-            p "Player winsxxx!"
+            "Player winsxxx!"
         elsif @@player_hand_value < @@banker_hand_value
-            p "Banker winsxxx!"
+            "Banker winsxxx!"
         else
-            p "Tie"
+            "Tie3"
         end
     end
     
@@ -433,15 +438,6 @@ end
 # SCHEMA REMINDER. player_hand and banker_hand, how are we storing this?
 # Player third card doesn't seem needed? Since we have class variables we can just check [2] index
 # Outcome needs to be set in winner method(s)
-# t.string "user_id"
-# t.string "banker_id"
-# t.integer "wager"
-# t.integer "player_hand"
-# t.integer "banker_hand"
-# t.integer "player_third_card"
-# t.string "outcome"
-
-
 
     # Banker Hand holds value
     # Player Hand holds value
