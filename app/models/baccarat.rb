@@ -38,6 +38,7 @@ class Baccarat
             else
                 puts "Invalid username or password. Please try again or sign up."
                 sleep(2)
+                system('clear')
                 self.auth_sequence
             end
         else
@@ -115,33 +116,37 @@ class Baccarat
 
         # Play round one
         puts "Round 1, Player and Banker draw two cards.\n\n"
-        #sleep(3)
+        sleep(1)
         self.player_round_one
         puts "\n\n"
-        #sleep(3)
+        sleep(1)
         self.banker_round_one
         puts "\n\n"
-        #sleep(3)
+        sleep(1)
 
         # binding.pry
-        if !self.two_card_winner.include?("No")    #checking if there is initial win, if yes we will restart the game
+        if !self.two_card_winner.include?("No") 
+            sleep(1)   #checking if there is initial win, if yes we will restart the game
             puts self.two_card_winner
+            sleep(1)
             self.correct_bet(bet_choice)    # Else, head to round 2
-            #binding.pry
+            sleep(0.5)
             self.play_again
         end
 
         # Play round two
         puts "\nRound 2\n\n"
-        sleep(2)
+        sleep(1)
         self.player_round_two
         puts "\n\n\n"
-        sleep(2)
+        sleep(1)
         self.banker_round_two
-
+        sleep(1)
+        puts "\n\n"
         puts self.three_card_winner
+        puts "\n\n"
+        sleep(1)
         self.correct_bet(bet_choice) # # Check if user picked the winner correctly, or lost
-        binding.pry
         self.play_again
     end
 
@@ -211,7 +216,7 @@ class Baccarat
 
     def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
         #may be double printing the wins here
-        binding.pry
+        #binding.pry
         if self.three_card_winner.include?(bet_choice) || self.two_card_winner.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
@@ -232,13 +237,13 @@ class Baccarat
     end
 
     def self.payout(bet_choice)
-        if bet_choice == "player"
+        if bet_choice == "Player"
             @@user.balance += @game.wager
             puts "You won #{@game.wager.round(2)}"
-        elsif bet_choice == "banker"
+        elsif bet_choice == "Banker"
             @@user.balance += @game.wager * @@banker.commission_rate
             puts "You won #{(@game.wager * @@banker.commission_rate).round(2)}"
-        elsif bet_choice == "tie"
+        elsif bet_choice == "Tie"
             @@user.balance += @game.wager * 8
             puts "You won #{(@game.wager * 8).round(2)}!"
         end
@@ -301,9 +306,9 @@ class Baccarat
     def self.banker_round_two 
         #If the Player stands pat (or draws no new cards), the Banker draws with a hand total of 0-5 
         #and stays pat with a hand total of 6 or 7. 
-        binding.pry
-        if !@playerhand[2]   
-            binding.pry
+        #binding.pry
+        if !@@playerhand[2]   
+            #binding.pry
             if @@banker_hand_value.between?(6,7)
                 puts "Banker stays"
             elsif @@banker_hand_value.between?(0,5)
@@ -346,10 +351,12 @@ class Baccarat
     def self.player_round_two # Why user&player?
         if @@player_hand_value <= 5 
             puts "Player's hand value is #{@@player_hand_value}, draw again"
+            sleep(1)
             player_card3 = self.draw_card
             player_card3_value = player_card3[1][:value]
             @playerhand << player_card3_value
             puts "Player draws a #{player_card3[0]}"
+            sleep(1)
             @@player_hand_value += player_card3_value
             
             @@player_hand_value = self.hand_over_ten(@@player_hand_value)  #if hand>=10, -=10
@@ -366,11 +373,11 @@ class Baccarat
         banker_card3 = self.draw_card
         @bankerhand << banker_card3
         puts "Banker drew #{banker_card3[0]}"
-        sleep(2)
+        sleep(1)
         @@banker_hand_value += banker_card3[1][:value]
         @@banker_hand_value = self.hand_over_ten(@@banker_hand_value)
         puts "Banker hand value is now #{@@banker_hand_value}"
-        sleep(2)
+        sleep(1)
     end
 
     # def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
@@ -413,9 +420,9 @@ class Baccarat
         if (@@player_hand_value == 8 || @@player_hand_value == 9) && (@@banker_hand_value < @@player_hand_value)
             "Player wins!"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value > @@player_hand_value)
-            "Banker winsyyyy"
+            "Banker wins!"
         elsif (@@banker_hand_value == 8 || @@banker_hand_value == 9)  && (@@banker_hand_value == @@player_hand_value)
-            "Tie2"
+            "It's a Tie"
         else
             "No two card win"
         end
@@ -423,11 +430,11 @@ class Baccarat
 
     def self.three_card_winner
         if @@player_hand_value > @@banker_hand_value
-            "Player winsxxx!"
+            "Player wins!"
         elsif @@player_hand_value < @@banker_hand_value
-            "Banker winsxxx!"
+            "Banker wins!"
         else
-            "Tie3"
+            "It's a Tie"
         end
     end
     
