@@ -3,10 +3,10 @@ require 'deck-of-cards'
 require "pry"
 
 class Baccarat
-    #sets class variables for the hand values for each round - look into ways to make this instance variable
-    @@playerhand = []
+    #sets class variables for the hand values for git each round - look into ways to make this instance variable
+    # @@playerhand = []
     @@player_hand_value = nil
-    @@bankerhand = []
+    # @bankerhand = []
     @@banker_hand_value = nil
     @@prompt = TTY::Prompt.new
     @@artii = Artii::Base.new :font => 'slant'
@@ -82,16 +82,6 @@ class Baccarat
         end
     end
 
-    # def self.delete_user
-    #     @@prompt.select("What user would you like to remove") do |menu|
-    #         User.all.select do |user_element|  #work on this, make password required - adam
-    #             menu.choice user_element.username, user_element.delete
-    #         end
-    #     end
-    #     self.welcome
-
-    # end
-
     # Choose banker
     def self.choose_banker #go through banker.all and output bankers
          @@banker = @@prompt.select("What banker would you like to play against?") do |menu|
@@ -114,12 +104,13 @@ class Baccarat
     def self.play_game
 
         @game = Game.create(user_id: @@user.id, banker_id: @@banker.id)
-        @@playerhand.clear
-        @@bankerhand.clear
+        @playerhand = []
+        @bankerhand = []
         self.value_cards # Create deck
-        
-        wager = self.wager # Set wager, bet on player, banker, tie
+        # binding.pry
 
+        self.wager # Set wager, bet on player, banker, tie
+        binding.pry
         bet_choice = self.place_bet # What would you like to place your bet on? Banker, Player, or Tie?
 
         # Play round one
@@ -176,7 +167,7 @@ class Baccarat
         deck
     end
 
-    # WAGER METHOD 
+    WAGER METHOD 
     def self.wager
         if @@user.balance == 0
             puts "You do not have enough funds to play"
@@ -184,26 +175,33 @@ class Baccarat
             sleep(4)
             self.display_menu # Back to main menu
         else
+            # binding.pry
             puts "Your current balance is #{@@user.balance}"
             puts "Enter your wager"
             wager_amount = gets.chomp.to_i
             self.validate_wager_amt(wager_amount)
+             binding.pry
             @game.update(wager: wager_amount)
+             binding.pry
             puts "You are betting #{wager_amount}"
+             #for some reason, after it gets the correct wager, it runs an additional time for the initial input
         end
     end
 
     def self.validate_wager_amt(wager_amount)
+        # binding.pry
         if wager_amount > @@user.balance
-            puts "You do not have enough money to wager #{wager_amount}. Your balance is #{@@user.balance}"
+            puts "You do not have enough money to wager #{wager_amount}."
             self.wager
         elsif wager_amount <= 0
-            "You must place a bet above 0"
+            puts "You must place a bet above 0"
             sleep(2)
             self.wager
-        else
-            "Puts your wager is #{wager_amount}"
+        # else
+        #     puts "Your wager is #{wager_amount}"
+        #     wager_amount
         end
+        binding.pry
     end
 
     def self.place_bet
@@ -230,6 +228,7 @@ class Baccarat
             puts "Your bet lost, your balance was reduced by #{@game.wager}"
             # binding.pry
         end
+        binding.pry
     end
 
     def self.draw_card
@@ -263,9 +262,9 @@ class Baccarat
         sleep(1)
 
         player_card1 = self.draw_card
-        @@playerhand << player_card1
+        @playerhand << player_card1
         player_card2 = self.draw_card
-        @@playerhand << player_card2
+        @playerhand << player_card2
         player_card1_value = player_card1[1][:value]
         player_card2_value = player_card2[1][:value]
 
@@ -282,9 +281,9 @@ class Baccarat
         puts "Banker draws two cards"
         sleep(1)
         banker_card1 = self.draw_card
-        @@bankerhand << banker_card1
+        @bankerhand << banker_card1
         banker_card2 = self.draw_card
-        @@bankerhand << banker_card2
+        @bankerhand << banker_card2
         banker_card1_value = banker_card1[1][:value]
         banker_card2_value = banker_card2[1][:value]
 
@@ -314,31 +313,31 @@ class Baccarat
             elsif @@banker_hand_value.between?(0,5)
                 self.banker_round_two_draw
             end
-        elsif @@playerhand[2] == 0 || @@playerhand[2] == 9 || @@playerhand[2] == 1
+        elsif @playerhand[2] == 0 || @playerhand[2] == 9 || @playerhand[2] == 1
             if @@banker_hand_value.between?(4,7)
                 puts "Banker stays" 
             else 
                 self.banker_round_two_draw 
             end
-        elsif @@playerhand[2] == 2 || @@playerhand[2] == 3
+        elsif @playerhand[2] == 2 || @playerhand[2] == 3
             if @@banker_hand_value.between?(5,7)
                 puts "Banker stays" 
             else 
                 self.banker_round_two_draw 
             end
-        elsif @@playerhand[2] == 4 || @@playerhand[2] == 5
+        elsif @playerhand[2] == 4 || @playerhand[2] == 5
             if @@banker_hand_value.between?(6,7)
                 puts "Banker stays"  
             else 
                 self.banker_round_two_draw  
             end
-        elsif @@playerhand[2] == 6 || @@playerhand[2] == 7
+        elsif @playerhand[2] == 6 || @playerhand[2] == 7
             if @@banker_hand_value == 7
                 puts "Banker stays"  
             else 
                 self.banker_round_two_draw 
             end
-        elsif @@playerhand[2] == 8
+        elsif @playerhand[2] == 8
             if @@banker_hand_value.between?(3,7)
                 puts "Banker stays"  
             else 
@@ -354,7 +353,7 @@ class Baccarat
             sleep(1)
             player_card3 = self.draw_card
             player_card3_value = player_card3[1][:value]
-            @@playerhand << player_card3_value
+            @playerhand << player_card3_value
             puts "Player draws a #{player_card3[0]}"
             sleep(1)
             @@player_hand_value += player_card3_value
@@ -371,7 +370,7 @@ class Baccarat
         puts "Banker draws a card"
         sleep(0.5)
         banker_card3 = self.draw_card
-        @@bankerhand << banker_card3
+        @bankerhand << banker_card3
         puts "Banker drew #{banker_card3[0]}"
         sleep(1)
         @@banker_hand_value += banker_card3[1][:value]
@@ -382,7 +381,7 @@ class Baccarat
 
     # def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
     #     # winner method getting passed through twice for some reason
-    #     if !@@playerhand[2] && !@@bankerhand[2]
+    #     if !@playerhand[2] && !@bankerhand[2]
     #         self.two_card_winner
     #     else
     #         self.three_card_winner
