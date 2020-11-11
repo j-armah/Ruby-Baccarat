@@ -4,13 +4,11 @@ require "pry"
 
 class Baccarat
     #sets class variables for the hand values for git each round - look into ways to make this instance variable
-    # @@playerhand = []
     @@player_hand_value = nil
-    # @bankerhand = []
     @@banker_hand_value = nil
     @@prompt = TTY::Prompt.new
     @@artii = Artii::Base.new :font => 'slant'
-    @@user = nil
+    
 
     # Runs the app!
     def run
@@ -74,7 +72,12 @@ class Baccarat
         when 4
             self.deposit_money
         when 5
-            self.delete_user
+            # self.delete_user
+            puts "#{@@user.username} deleted"
+            @@user.delete
+            sleep(0.5)
+            system('clear')
+            self.auth_sequence
         when 6
             puts "Good bye"
             sleep(2)
@@ -211,21 +214,21 @@ class Baccarat
         end
     end
 
-    def self.validate_wager_amt(wager_amount)
-        # binding.pry
-        if wager_amount > @@user.balance
-            puts "You do not have enough money to wager #{wager_amount}."
-            self.wager
-        elsif wager_amount <= 0
-            puts "You must place a bet above 0"
-            sleep(2)
-            self.wager
-        # else
-        #     puts "Your wager is #{wager_amount}"
-        #     wager_amount
-        end
-        #binding.pry
-    end
+    # def self.validate_wager_amt(wager_amount)
+    #     # binding.pry
+    #     if wager_amount > @@user.balance
+    #         puts "You do not have enough money to wager #{wager_amount}."
+    #         self.wager
+    #     elsif wager_amount <= 0
+    #         puts "You must place a bet above 0"
+    #         sleep(2)
+    #         self.wager
+    #     # else
+    #     #     puts "Your wager is #{wager_amount}"
+    #     #     wager_amount
+    #     end
+    #     #binding.pry
+    # end
 
     def self.place_bet
         bet_choice = @@prompt.select("Place bet on Banker, Player, or Tie") do |menu|
@@ -248,6 +251,7 @@ class Baccarat
         else
             @game.update(outcome: "loss")
             @@user.balance -= @game.wager
+            @@user.update(balance: @@user.balance)
             puts "Your bet lost, your balance was reduced by #{@game.wager}"
             # binding.pry
         end
@@ -269,6 +273,7 @@ class Baccarat
             @@user.balance += @game.wager * 8
             puts "You won #{(@game.wager * 8).round(2)}!"
         end
+        @@user.update(balance: @@user.balance)
     end
 
     def self.hand_over_ten(hand_value) #will subtract the hand value if >10
