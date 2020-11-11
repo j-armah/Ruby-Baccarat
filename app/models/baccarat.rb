@@ -77,7 +77,7 @@ class Baccarat
             # self.delete_user
             puts "#{@@user.username} deleted"
             @@user.delete
-            sleep(0.5)
+            sleep(0.9)
             system('clear')
             self.auth_sequence
         when 6
