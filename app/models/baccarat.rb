@@ -4,15 +4,13 @@ require "pry"
 
 class Baccarat
     #sets class variables for the hand values for git each round - look into ways to make this instance variable
-    # @@playerhand = []
     @@player_hand_value = nil
-    # @bankerhand = []
     @@banker_hand_value = nil
     @@prompt = TTY::Prompt.new
     @@artii = Artii::Base.new :font => 'slant'
-    @@user = nil
+    
 
-    ####### CLI FRAMEWORK/SKELETON
+    # Runs the app!
     def run
         self.class.welcome
     end
@@ -26,7 +24,6 @@ class Baccarat
 
     def self.auth_sequence
         sleep(1)
-        #@@user = User.first
         choices = { "Log In" => 1,
             "Sign Up" => 2
         }
@@ -75,7 +72,12 @@ class Baccarat
         when 4
             self.deposit_money
         when 5
-            self.delete_user
+            # self.delete_user
+            puts "#{@@user.username} deleted"
+            @@user.delete
+            sleep(0.5)
+            system('clear')
+            self.auth_sequence
         when 6
             puts "Good bye"
             sleep(2)
@@ -96,7 +98,7 @@ class Baccarat
     def self.game_results
         # binding.pry
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
-        Your winning percentage is #{100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f.round(2)}%."
+        Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
         sleep(3)
         self.display_menu
     end
@@ -111,7 +113,7 @@ class Baccarat
         # binding.pry
 
         self.wager # Set wager, bet on player, banker, tie
-        binding.pry
+        #binding.pry
         bet_choice = self.place_bet # What would you like to place your bet on? Banker, Player, or Tie?
 
         # Play round one
@@ -169,41 +171,67 @@ class Baccarat
     end
 
     #WAGER METHOD 
+<<<<<<< HEAD
+=======
+    # def self.wager
+    #     if @@user.balance == 0
+    #         puts "You do not have enough funds to play"
+    #         puts "Returning to main menu"
+    #         sleep(4)
+    #         self.display_menu # Back to main menu
+    #     else
+    #         # binding.pry
+    #         puts "Your current balance is #{@@user.balance}"
+    #         puts "Enter your wager"
+    #         wager_amount = gets.chomp.to_i
+    #         self.validate_wager_amt(wager_amount)
+    #          binding.pry
+    #         @game.update(wager: wager_amount)
+    #          binding.pry
+    #         puts "You are betting #{wager_amount}"
+    #          #for some reason, after it gets the correct wager, it runs an additional time for the initial input
+    #     end
+    # end
+>>>>>>> jeremy-feature
     def self.wager
         if @@user.balance == 0
-            puts "You do not have enough funds to play"
-            puts "Returning to main menu"
-            sleep(4)
-            self.display_menu # Back to main menu
+            puts "You do not have sufficient funds"
+            sleep(1)
+            self.display_menu 
         else
-            # binding.pry
             puts "Your current balance is #{@@user.balance}"
-            puts "Enter your wager"
+            puts "Place your wager bet"
             wager_amount = gets.chomp.to_i
-            self.validate_wager_amt(wager_amount)
-             binding.pry
             @game.update(wager: wager_amount)
-             binding.pry
-            puts "You are betting #{wager_amount}"
-             #for some reason, after it gets the correct wager, it runs an additional time for the initial input
+            if wager_amount > @@user.balance
+                puts "Wager is greater than your balance, please place valid wager."
+                sleep(1)
+                self.wager
+            elsif wager_amount < 1
+                puts "Wager amount must be greater than 0."
+                sleep(1)
+                self.wager
+            else
+                puts "Your wager is #{@game.wager}"
+            end
         end
     end
 
-    def self.validate_wager_amt(wager_amount)
-        # binding.pry
-        if wager_amount > @@user.balance
-            puts "You do not have enough money to wager #{wager_amount}."
-            self.wager
-        elsif wager_amount <= 0
-            puts "You must place a bet above 0"
-            sleep(2)
-            self.wager
-        # else
-        #     puts "Your wager is #{wager_amount}"
-        #     wager_amount
-        end
-        binding.pry
-    end
+    # def self.validate_wager_amt(wager_amount)
+    #     # binding.pry
+    #     if wager_amount > @@user.balance
+    #         puts "You do not have enough money to wager #{wager_amount}."
+    #         self.wager
+    #     elsif wager_amount <= 0
+    #         puts "You must place a bet above 0"
+    #         sleep(2)
+    #         self.wager
+    #     # else
+    #     #     puts "Your wager is #{wager_amount}"
+    #     #     wager_amount
+    #     end
+    #     #binding.pry
+    # end
 
     def self.place_bet
         bet_choice = @@prompt.select("Place bet on Banker, Player, or Tie") do |menu|
@@ -226,10 +254,11 @@ class Baccarat
         else
             @game.update(outcome: "loss")
             @@user.balance -= @game.wager
+            @@user.update(balance: @@user.balance)
             puts "Your bet lost, your balance was reduced by #{@game.wager}"
             # binding.pry
         end
-        binding.pry
+        #binding.pry
     end
 
     def self.draw_card
@@ -247,6 +276,7 @@ class Baccarat
             @@user.balance += @game.wager * 8
             puts "You won #{(@game.wager * 8).round(2)}!"
         end
+        @@user.update(balance: @@user.balance)
     end
 
     def self.hand_over_ten(hand_value) #will subtract the hand value if >10
@@ -307,7 +337,7 @@ class Baccarat
         #If the Player stands pat (or draws no new cards), the Banker draws with a hand total of 0-5 
         #and stays pat with a hand total of 6 or 7. 
         #binding.pry
-        if !@@playerhand[2]   
+        if !@playerhand[2]   
             #binding.pry
             if @@banker_hand_value.between?(6,7)
                 puts "Banker stays"
@@ -440,23 +470,4 @@ class Baccarat
     
 end
 
-# SCHEMA REMINDER. player_hand and banker_hand, how are we storing this?
-# Player third card doesn't seem needed? Since we have class variables we can just check [2] index
-# Outcome needs to be set in winner method(s)
 
-    # Banker Hand holds value
-    # Player Hand holds value
-
-    # method to check value of player hand
-    # method to check value of banker hand
-
-    # place bet method, checks users balance
-
-    # draw card method
-
-    # third_draw? if banker needs to draw another card then use helper method 
-    # or another method where banker draws third card
-
-    # winner method
-
-    # play another game method?
