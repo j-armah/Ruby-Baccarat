@@ -95,7 +95,7 @@ class Baccarat
     def self.game_results
         # binding.pry
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
-        Your winning percentage is #{100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f.round(2)}%."
+        Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
         sleep(3)
         self.display_menu
     end
@@ -110,7 +110,7 @@ class Baccarat
         # binding.pry
 
         self.wager # Set wager, bet on player, banker, tie
-        binding.pry
+        #binding.pry
         bet_choice = self.place_bet # What would you like to place your bet on? Banker, Player, or Tie?
 
         # Play round one
@@ -188,7 +188,7 @@ class Baccarat
     #     end
     # end
     def self.wager
-        if @@user.bank == 0
+        if @@user.balance == 0
             puts "You do not have sufficient funds"
             sleep(1)
             self.display_menu 
@@ -224,7 +224,7 @@ class Baccarat
         #     puts "Your wager is #{wager_amount}"
         #     wager_amount
         end
-        binding.pry
+        #binding.pry
     end
 
     def self.place_bet
@@ -251,7 +251,7 @@ class Baccarat
             puts "Your bet lost, your balance was reduced by #{@game.wager}"
             # binding.pry
         end
-        binding.pry
+        #binding.pry
     end
 
     def self.draw_card
@@ -329,7 +329,7 @@ class Baccarat
         #If the Player stands pat (or draws no new cards), the Banker draws with a hand total of 0-5 
         #and stays pat with a hand total of 6 or 7. 
         #binding.pry
-        if !@@playerhand[2]   
+        if !@playerhand[2]   
             #binding.pry
             if @@banker_hand_value.between?(6,7)
                 puts "Banker stays"
@@ -462,23 +462,4 @@ class Baccarat
     
 end
 
-# SCHEMA REMINDER. player_hand and banker_hand, how are we storing this?
-# Player third card doesn't seem needed? Since we have class variables we can just check [2] index
-# Outcome needs to be set in winner method(s)
 
-    # Banker Hand holds value
-    # Player Hand holds value
-
-    # method to check value of player hand
-    # method to check value of banker hand
-
-    # place bet method, checks users balance
-
-    # draw card method
-
-    # third_draw? if banker needs to draw another card then use helper method 
-    # or another method where banker draws third card
-
-    # winner method
-
-    # play another game method?
