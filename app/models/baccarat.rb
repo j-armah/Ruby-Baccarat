@@ -170,9 +170,7 @@ class Baccarat
         deck
     end
 
-    #WAGER METHOD 
-<<<<<<< HEAD
-=======
+    # WAGER METHOD 
     # def self.wager
     #     if @@user.balance == 0
     #         puts "You do not have enough funds to play"
@@ -192,7 +190,7 @@ class Baccarat
     #          #for some reason, after it gets the correct wager, it runs an additional time for the initial input
     #     end
     # end
->>>>>>> jeremy-feature
+    
     def self.wager
         if @@user.balance == 0
             puts "You do not have sufficient funds"
