@@ -102,7 +102,7 @@ class Baccarat
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
         Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
         puts "\n\n"
-        sleep(3)
+        sleep(1)
         self.delete_game_results
         sleep(1)
         self.display_menu
