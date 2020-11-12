@@ -100,15 +100,20 @@ class Baccarat
     end
 
     def self.game_results
-        # binding.pry
-        favorite = @@user.bankers.max_by {|banker| banker}.name
-        puts "Your favorite dealer is #{favorite}."
-        #  puts "Your favorite dealer is #{@@user.bankers.group('name').order('count_all DESC').limit(1).count}."  // need just key
-
-        puts "\n\n"
-        sleep(1)
-        self.delete_game_results
-        sleep(1)
+        if @@user.games[0]
+            puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
+            Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
+            # binding.pry
+            favorite = @@user.bankers.max_by {|banker| banker}.name
+            puts "Your favorite banker is #{favorite}."
+            puts "\n\n"
+            sleep(3)
+            self.delete_game_results
+            sleep(1)
+        else
+            puts "You no games. Returning you to the main menu..."
+            sleep(1)
+        end
         self.display_menu
     end
 
