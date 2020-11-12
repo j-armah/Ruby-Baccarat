@@ -81,7 +81,7 @@ class Baccarat
             system('clear')
             self.auth_sequence
         when 6
-            puts "Good bye"
+            puts "Good bye!"
             sleep(2)
             exit
         end
@@ -101,8 +101,25 @@ class Baccarat
         
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
         Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
+        puts "\n\n"
         sleep(3)
+        self.delete_game_results
+        sleep(1)
         self.display_menu
+    end
+
+    def self.delete_game_results
+        choices = { "Yes" => 1,
+            "No" => 2
+        }
+        choice = @@prompt.select("Would you like to delete your game results?", choices)
+        if choice == 1
+            puts "Deleting game results..."
+            sleep(2)
+            @@user.games.destroy_all
+        else
+            puts "Returning to main menu"
+        end
     end
     
 
