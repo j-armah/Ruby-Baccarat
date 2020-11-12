@@ -68,7 +68,8 @@ class Baccarat
             puts "You chose to see results"
             self.game_results
         when 3
-            puts "Your balance is #{@@user.balance}"
+            # binding.pry
+            puts "Your balance is $#{@@user.balance}"
             sleep(3)
             self.display_menu
         when 4
@@ -99,18 +100,22 @@ class Baccarat
     end
 
     def self.game_results
-        
-        puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
-        Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
         # binding.pry
-        favorite = @@user.bankers.max_by {|banker| banker}.name
-        puts "Your favorite dealer is #{favorite}."
-        #  puts "Your favorite dealer is #{@@user.bankers.group('name').order('count_all DESC').limit(1).count}."  // need just key
-
-        puts "\n\n"
-        sleep(3)
-        self.delete_game_results
-        sleep(1)
+        if @@user.games[0]
+            puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
+            Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
+            # binding.pry
+            favorite = @@user.bankers.max_by {|banker| banker}.name
+            puts "Your favorite banker is #{favorite}."
+            #  puts "Your favorite dealer is #{@@user.bankers.group('name').order('count_all DESC').limit(1).count}."  // need just key
+            puts "\n\n"
+            sleep(3)
+            self.delete_game_results
+            sleep(1)
+        else
+            puts "You no games. Returning you to the main menu..."
+            sleep(1)
+        end
         self.display_menu
     end
 
@@ -220,7 +225,7 @@ class Baccarat
             sleep(1)
             self.display_menu 
         else
-            puts "Your current balance is #{@@user.balance}"
+            puts "Your current balance is $#{@@user.balance}"
             puts "Place your wager bet"
             wager_amount = gets.chomp.to_i
             @game.update(wager: wager_amount)
@@ -465,6 +470,8 @@ class Baccarat
         puts "How much would you like to deposit?"
         @@user.balance += gets.chomp.to_f
         @@user.update(balance: @@user.balance)
+        puts "Your new balance is $#{@@user.balance}."
+        sleep(1)
         self.display_menu
     end
 

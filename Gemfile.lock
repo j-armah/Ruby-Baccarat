@@ -64,6 +64,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord (~> 5.2)
+  activesupport
   artii (~> 2.1, >= 2.1.2)
   deck-of-cards
   faker
