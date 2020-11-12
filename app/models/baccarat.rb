@@ -90,7 +90,8 @@ class Baccarat
     # Choose banker
     def self.choose_banker #go through banker.all and output bankers
          @@banker = @@prompt.select("What banker would you like to play against?") do |menu|
-                Banker.all.select do |banker_element|
+            # binding.pry    
+            Banker.all.select do |banker_element|
                     menu.choice banker_element.name, banker_element
                 end
             end
@@ -101,6 +102,11 @@ class Baccarat
         
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
         Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
+        # binding.pry
+        favorite = @@user.bankers.max_by {|banker| banker}.name
+        puts "Your favorite dealer is #{favorite}."
+        #  puts "Your favorite dealer is #{@@user.bankers.group('name').order('count_all DESC').limit(1).count}."  // need just key
+
         puts "\n\n"
         sleep(3)
         self.delete_game_results
@@ -129,8 +135,6 @@ class Baccarat
         @playerhand = []
         @bankerhand = []
         self.value_cards # Create deck
-        
-
         self.wager # Set wager, bet on player, banker, tie
     
         bet_choice = self.place_bet # What would you like to place your bet on? Banker, Player, or Tie?
