@@ -131,7 +131,7 @@ class Baccarat
         end
     end
     
-
+    ######## Game Method and it's components ########
     def self.play_game
 
         @game = Game.create(user_id: @@user.id, banker_id: @@banker.id)
@@ -351,8 +351,6 @@ class Baccarat
     end
 
     ##### AFTER ROUND 1 CHECK FOR WINNER. IF NO WINNER PROCEED TO ROUND 2 ####
-    # if self.winner has a winner for two card winner go to self.play_again? method
-    # else we go to round 2
 
     ### WE HAVE PLAYED ROUND ONE, IF THERE IS NO WINNER WE GO HERE
 
@@ -434,16 +432,6 @@ class Baccarat
         sleep(1)
     end
 
-    # def self.winner  #if one of these true // we want this methhod to end the game, output who won the game//
-    #     # winner method getting passed through twice for some reason
-    #     if !@playerhand[2] && !@bankerhand[2]
-    #         self.two_card_winner
-    #     else
-    #         self.three_card_winner
-    #     end
-    #    
-    # end
-
     def self.play_again
         choice = @@prompt.select("Do you want to play again?") do |menu|
             menu.choice "yes"
@@ -462,7 +450,7 @@ class Baccarat
         end
     end
 
-    private
+    private # Don't touch!
 
     def self.deposit_money
         puts "How much would you like to deposit?"
