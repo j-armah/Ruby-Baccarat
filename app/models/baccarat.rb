@@ -77,7 +77,7 @@ class Baccarat
             # self.delete_user
             puts "#{@@user.username} deleted"
             @@user.delete
-            sleep(0.9)
+            sleep(0.5)
             system('clear')
             self.auth_sequence
         when 6
@@ -98,7 +98,7 @@ class Baccarat
     end
 
     def self.game_results
-        # binding.pry
+        
         puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
         Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
         sleep(3)
@@ -112,10 +112,10 @@ class Baccarat
         @playerhand = []
         @bankerhand = []
         self.value_cards # Create deck
-        # binding.pry
+        
 
         self.wager # Set wager, bet on player, banker, tie
-        #binding.pry
+    
         bet_choice = self.place_bet # What would you like to place your bet on? Banker, Player, or Tie?
 
         # Play round one
@@ -128,7 +128,7 @@ class Baccarat
         puts "\n\n"
         sleep(1)
 
-        # binding.pry
+        
         if !self.two_card_winner.include?("No") 
             sleep(1)   #checking if there is initial win, if yes we will restart the game
             puts self.two_card_winner
@@ -180,14 +180,14 @@ class Baccarat
     #         sleep(4)
     #         self.display_menu # Back to main menu
     #     else
-    #         # binding.pry
+    #         
     #         puts "Your current balance is #{@@user.balance}"
     #         puts "Enter your wager"
     #         wager_amount = gets.chomp.to_i
     #         self.validate_wager_amt(wager_amount)
-    #          binding.pry
+    #        
     #         @game.update(wager: wager_amount)
-    #          binding.pry
+    #        
     #         puts "You are betting #{wager_amount}"
     #          #for some reason, after it gets the correct wager, it runs an additional time for the initial input
     #     end
@@ -218,7 +218,7 @@ class Baccarat
     end
 
     # def self.validate_wager_amt(wager_amount)
-    #     # binding.pry
+    #     
     #     if wager_amount > @@user.balance
     #         puts "You do not have enough money to wager #{wager_amount}."
     #         self.wager
@@ -230,7 +230,7 @@ class Baccarat
     #     #     puts "Your wager is #{wager_amount}"
     #     #     wager_amount
     #     end
-    #     #binding.pry
+    #    
     # end
 
     def self.place_bet
@@ -244,7 +244,7 @@ class Baccarat
 
     def self.correct_bet(bet_choice) # if a user bets incorrectly, they should lose their bet. User.balance. If they win correctly, go to a payout method
         #may be double printing the wins here
-        #binding.pry
+    
         if self.three_card_winner.include?(bet_choice) || self.two_card_winner.include?(bet_choice)
             @game.update(outcome: "win")
             self.payout(bet_choice)
@@ -256,9 +256,9 @@ class Baccarat
             @@user.balance -= @game.wager
             @@user.update(balance: @@user.balance)
             puts "Your bet lost, your balance was reduced by #{@game.wager}"
-            # binding.pry
+            
         end
-        #binding.pry
+    
     end
 
     def self.draw_card
@@ -336,9 +336,9 @@ class Baccarat
     def self.banker_round_two 
         #If the Player stands pat (or draws no new cards), the Banker draws with a hand total of 0-5 
         #and stays pat with a hand total of 6 or 7. 
-        #binding.pry
+    
         if !@playerhand[2]   
-            #binding.pry
+        
             if @@banker_hand_value.between?(6,7)
                 puts "Banker stays"
             elsif @@banker_hand_value.between?(0,5)
@@ -417,7 +417,7 @@ class Baccarat
     #     else
     #         self.three_card_winner
     #     end
-    #     #binding.pry
+    #    
     # end
 
     def self.play_again
@@ -443,6 +443,7 @@ class Baccarat
     def self.deposit_money
         puts "How much would you like to deposit?"
         @@user.balance += gets.chomp.to_f
+        @@user.update(balance: @@user.balance)
         self.display_menu
     end
 
