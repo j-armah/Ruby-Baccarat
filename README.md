@@ -1,5 +1,5 @@
 # Baccarat!
-========================
+
 
 Baccarat is a CLI card game based in Ruby. The user can play games of and bet on who will win each game. The goal of Baccarat is to bet on an outcome between the banker/dealer and a figurative "player". You may bet on either the banker hand, player hand, or you may bet on a tie. 
 
@@ -7,7 +7,7 @@ The user can create a user account, login with their account, and delete their a
 
 ---
 # Install Instructions
-========================
+
 To install:
 Clone this repo down to your local machine and run bundle install.
 
@@ -18,7 +18,7 @@ Run rake db:seed to initialize default bankers
 You're ready to play!
 
 # Acknowledgements
-=========================
+
 Gems:
 ArtII
 https://github.com/miketierney/artii
