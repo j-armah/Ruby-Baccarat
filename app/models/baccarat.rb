@@ -104,7 +104,7 @@ class Baccarat
             puts "Out of #{@@user.games.count} games, you have won #{@@user.games.where(outcome: 'win').count}. 
             Your winning percentage is #{(100*@@user.games.where(outcome: 'win').count/@@user.games.count.to_f).round(2)}%."
             # binding.pry
-            favorite = @@user.bankers.max_by {|banker| banker}.name
+            favorite = @@user.bankers.group('name').order('count_all DESC').limit(1).count.keys[0]
             puts "Your favorite banker is #{favorite}."
             puts "\n\n"
             sleep(3)
@@ -133,6 +133,7 @@ class Baccarat
     
     ######## Game Method and it's components ########
     def self.play_game
+        system('clear')
 
         @game = Game.create(user_id: @@user.id, banker_id: @@banker.id)
         @playerhand = []
